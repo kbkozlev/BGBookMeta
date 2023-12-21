@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import cloudscraper
+import re
 
 
 class OrangeScraper:
@@ -13,21 +14,25 @@ class OrangeScraper:
 
         if response.status_code == 200:
             html_content = response.content
-            self.extract_individual_search_items(html_content)
+            self.extract_individual_search_items(html_content, search_term)
             self.get_book_info()
         else:
             print("Failed to fetch the page:", response.status_code)
 
-    def extract_individual_search_items(self, html_content):
+    def extract_individual_search_items(self, html_content, search_term):
         soup = BeautifulSoup(html_content, 'html.parser')
-        product_links = soup.select('.products.wrapper .product-item-info')
+        product_items = soup.find_all('a', class_='product-item-info')
 
-        for link in product_links:
-            href = link['href']
-            if href:
+        for item in product_items:
+            title = item.find('strong', class_='product-item-name').text.strip()
+            processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s]', ' ', title)).strip()
+
+            if search_term.lower() in processed_title.lower():
+                href = item['href']
                 self.individual_search_items.add(href)
 
     def get_book_info(self):
+
         for item in self.individual_search_items:
             response = self.scraper.get(item)
 
@@ -35,59 +40,65 @@ class OrangeScraper:
                 html_content = response.content
                 soup = BeautifulSoup(html_content, 'html.parser')
 
-                book_title = soup.find('span', {'class': 'base', 'data-ui-id': 'page-title-wrapper'}).get_text()
-                og_image_meta = soup.find("meta", property="og:image")
-                image_url = og_image_meta["content"]
-                description_div = soup.find('div', class_='description').find('div', class_='text').find_all('p')
-                combined_text = ' '.join(paragraph.text.strip() for paragraph in description_div)
-
-                book_details = {
-                    "Book Title": book_title,
-                    "Author": "",  # Placeholder for Author (will be updated later)
-                    "Image Source": image_url,
-                    "Publisher": "",  # Placeholder for Publisher (will be updated later)
-                    "Language": "",  # Placeholder for Language (will be updated later)
-                    "Publication Year": "",  # Placeholder for Publication Year (will be updated later)
-                    "ISBN": "",  # Placeholder for ISBN (will be updated later)
-                    "Description": combined_text
-                }
-
-                # Find specific elements and extract their values
-                specific_elements = {
-                    'Автор': 'Author',
-                    'Издателство': 'Publisher',
-                    'Език': 'Language',
-                    'Година на издаване': 'Publication Year',
-                    'ISBN': 'ISBN'
-                }
-
-                ul_elements = soup.find_all('ul', class_='attributes__list')
-
-                for ul in ul_elements:
-                    li_elements = ul.find_all('li', class_='attributes__item')
-                    for li in li_elements:
-                        key_element = li.find('span', class_='attributes__item-title')
-                        value_element = li.find('span', class_='attributes__item-info')
-                        if key_element and value_element:
-                            key = key_element.get_text(strip=True)
-                            if key in specific_elements:
-                                value = value_element.get_text(strip=True)
-                                # Update the corresponding placeholders in book_details
-                                book_details[specific_elements[key]] = value
-
-                # Rearrange the book_details dictionary in the desired order
-                reordered_book_details = {
-                    "book_title": book_details["Book Title"],
-                    "author": book_details["Author"],
-                    "img_src": book_details["Image Source"],
-                    "publisher": book_details["Publisher"],
-                    "language": book_details["Language"],
-                    "publication_year": book_details["Publication Year"],
-                    "ISBN": book_details["ISBN"],
-                    "description": book_details["Description"]
-                }
-
-                print(reordered_book_details)
+                book_details = self.extract_book_details(soup)
+                formatted_details = self.format_book_details(book_details)
+                print(formatted_details)
 
             else:
                 print("Failed to fetch the page:", response.status_code)
+
+    @staticmethod
+    def extract_book_details(soup):
+        book_details = {
+            "book_title": soup.find('span', {'class': 'base', 'data-ui-id': 'page-title-wrapper'}).get_text(),
+            "author": "", "img_src": "", "publisher": "", "language": "", "publication_year": "", "ISBN": "",
+            "tags": "", "description": ""}
+
+        og_image_meta = soup.find("meta", property="og:image")
+        if og_image_meta:
+            book_details["img_src"] = og_image_meta["content"]
+
+        description_div = soup.find('div', class_='description')
+        if description_div:
+            text_div = description_div.find('div', class_='text')
+            if text_div:
+                description_text = ' '.join(paragraph.text.strip() for paragraph in text_div.find_all('p'))
+                book_details["description"] = description_text
+
+        specific_elements = {
+            'Автор': 'author',
+            'Издателство': 'publisher',
+            'Език': 'language',
+            'Година на издаване': 'publication_year',
+            'ISBN': 'ISBN'
+        }
+
+        ul_elements = soup.find_all('ul', class_='attributes__list')
+
+        for ul in ul_elements:
+            li_elements = ul.find_all('li', class_='attributes__item')
+            for li in li_elements:
+                key_element = li.find('span', class_='attributes__item-title')
+                value_element = li.find('span', class_='attributes__item-info')
+                if key_element and value_element:
+                    key = key_element.get_text(strip=True)
+                    if key in specific_elements:
+                        value = value_element.get_text(strip=True)
+                        book_details[specific_elements[key]] = value
+
+        return book_details
+
+    @staticmethod
+    def format_book_details(book_details):
+        formatted_details = {
+            "book_title": book_details.get("book_title", ""),
+            "author": book_details.get("author", ""),
+            "publisher": book_details.get("publisher", ""),
+            "ISBN": book_details.get("ISBN", ""),
+            "language": book_details.get("language", ""),
+            "publication_year": book_details.get("publication_year", ""),
+            "img_src": book_details.get("img_src", ""),
+            "tags": book_details.get("tags", ""),
+            "description": book_details.get("description", "")
+        }
+        return formatted_details
