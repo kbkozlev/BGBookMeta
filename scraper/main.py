@@ -1,6 +1,9 @@
 from helikon import HelikonScraper
+from orange import OrangeScraper
 
-search_term = '9786197115147'
+search_term = 'Сойка Присмехулка'
 
 if __name__ == "__main__":
-    scraper = HelikonScraper(search_term)
+    HelikonScraper(search_term)
+    OrangeScraper(search_term)
+
