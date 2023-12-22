@@ -1,6 +1,7 @@
-from helikon import HelikonScraper
-from orange import OrangeScraper
-from knizhenPazar import PazarScraper
+from scrapers.helikon import HelikonScraper
+from scrapers.orange import OrangeScraper
+from scrapers.knizhenPazar import PazarScraper
+
 
 search_term = 'Сойка Присмехулка'
 

@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import cloudscraper
 import re
+from .helpers.utils import format_book_details
 
 
 class HelikonScraper:
@@ -22,9 +23,9 @@ class HelikonScraper:
 
     def __extract_individual_search_items(self, html_content, search_term):
         soup = BeautifulSoup(html_content, 'html.parser')
-        product_items = soup.select("div.col-sm-4.col-md-3.col-xs-6")
+        book_items = soup.select("div.col-sm-4.col-md-3.col-xs-6")
 
-        for item in product_items:
+        for item in book_items:
             a_tag = item.find('h5', class_='product-caption-title').find('a')
             processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s.]', ' ', a_tag.text)).strip()
 
@@ -72,17 +73,7 @@ class HelikonScraper:
                 print("Failed to fetch the page:", response.status_code)
 
     def __format_book_details(self, book_details):
-        formatted_details = {
-            "book_title": book_details.get("book_title", ""),
-            "author": book_details.get("author", ""),
-            "publisher": book_details.get("publisher", ""),
-            "ISBN": book_details.get("ISBN", ""),
-            "language": book_details.get("language", ""),
-            "publication_year": book_details.get("publication_year", ""),
-            "img_src": book_details.get("img_src", ""),
-            "tags": book_details.get("tags", ""),
-            "description": book_details.get("description", "")
-        }
+        formatted_details = format_book_details(book_details)
         self.formatted_details.append(formatted_details)
 
     def get_book_list(self):
