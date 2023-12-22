@@ -8,5 +8,6 @@ def format_book_details(book_details):
         "publication_year": book_details.get("publication_year", ""),
         "img_src": book_details.get("img_src", ""),
         "tags": book_details.get("tags", ""),
+        "description": book_details.get("description", "")
     }
     return formatted_details
