@@ -5,25 +5,30 @@ from scrapers.knizhenPazar import PazarScraper
 search_term = 'Сойка присмехулка'
 
 
-def print_books(*args):
-    full_list = []
+def print_books(*scrapers):
+    all_books = []
 
-    for scraper in args:
-        full_list.extend(scraper.get_book_list())
+    for scraper in scrapers:
+        try:
+            books = scraper.get_book_list()
+            all_books.extend(books)
+        except Exception as e:
+            print(f"Error fetching books from {type(scraper).__name__}: {e}")
 
-    max_key_length = max(len(key) for book in full_list for key in book.keys())
-    i = 1
+    if all_books:
+        max_key_length = max(len(key) for book in all_books for key in book.keys())
 
-    for book in full_list:
-        print(f'Book Nr.{i}')
-        print('------------')
-        for key, value in book.items():
-            print(f"{key.ljust(max_key_length)}: {value}")
-        i += 1
-        print()
+        for idx, book in enumerate(all_books, start=1):
+            print(f'Book Nr.{idx}')
+            print('------------')
+            for key, value in book.items():
+                print(f"{key.ljust(max_key_length)}: {value}")
+            print()
 
-    print(f"Total books fetched: {len(full_list)}")
-    print("========================")
+        print(f"Total books fetched: {len(all_books)}")
+    else:
+        print("No books fetched from any scraper.")
+    print("==================================")
 
 
 if __name__ == "__main__":
