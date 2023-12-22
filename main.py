@@ -2,7 +2,7 @@ from scrapers.helikon import HelikonScraper
 from scrapers.orange import OrangeScraper
 from scrapers.knizhenPazar import PazarScraper
 
-search_term = 'Сойка Присмехулка'
+search_term = 'Сойка присмехулка'
 
 
 def print_books(*args):
@@ -19,7 +19,7 @@ def print_books(*args):
         print('------------')
         for key, value in book.items():
             print(f"{key.ljust(max_key_length)}: {value}")
-        i+=1
+        i += 1
         print()
 
     print(f"Total books fetched: {len(full_list)}")

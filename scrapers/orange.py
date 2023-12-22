@@ -19,7 +19,7 @@ class OrangeScraper:
             self.__extract_individual_search_items(html_content, search_term)
             self.__get_book_info()
         else:
-            print("Failed to fetch the page:", response.status_code)
+            print(f"{self.__class__.__name__} failed to fetch the main page: {response.status_code}")
 
     def __extract_individual_search_items(self, html_content, search_term):
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -73,7 +73,7 @@ class OrangeScraper:
                 self.__format_book_details(book_details)
 
             else:
-                print("Failed to fetch the page:", response.status_code)
+                print(f"{self.__class__.__name__} failed to fetch {item}: {response.status_code}")
 
     def __format_book_details(self, book_details):
         formatted_details = format_book_details(book_details)
