@@ -26,7 +26,7 @@ class HelikonScraper:
         for item in product_items:
             a_tag = item.find('h5', class_='product-caption-title').find('a')
             title = a_tag.text
-            processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s]', ' ', title)).strip()
+            processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s.]', ' ', title)).strip()
 
             if search_term.lower() in processed_title.lower():
                 href = a_tag.get('href')

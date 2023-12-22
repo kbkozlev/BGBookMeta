@@ -25,7 +25,7 @@ class OrangeScraper:
 
         for item in product_items:
             title = item.find('strong', class_='product-item-name').text.strip()
-            processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s]', ' ', title)).strip()
+            processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s.]', ' ', title)).strip()
 
             if search_term.lower() in processed_title.lower():
                 href = item['href']

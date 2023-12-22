@@ -26,7 +26,7 @@ class PazarScraper:
         for item in product_items:
             a_tag = item.find('div', class_='prl__title').a
             title = a_tag.text
-            processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s]', ' ', title)).strip()
+            processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s.]', ' ', title)).strip()
 
             if search_term.lower() in processed_title.lower():
                 href = a_tag.get('href')
@@ -75,7 +75,7 @@ class PazarScraper:
                     key = key_mapping.get(label, label)  # Get the mapped key or use the original label
                     book_details[key] = value.get_text(strip=True)
 
-        print(book_details)
+        return book_details  # Return the extracted details dictionary
 
     @staticmethod
     def format_book_details(book_details):
