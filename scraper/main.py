@@ -2,9 +2,22 @@ from helikon import HelikonScraper
 from orange import OrangeScraper
 from knizhenPazar import PazarScraper
 
-search_term = ('Един наивник на средна възраст. Реквием за една мръсница')
+search_term = 'Сойка Присмехулка'
+
+
+def print_books(*args):
+    full_list = []
+
+    for scraper in args:
+        full_list.extend(scraper.get_book_list())
+
+    for book in full_list:
+        print(book)
+
 
 if __name__ == "__main__":
-    #HelikonScraper(search_term)
-    #OrangeScraper(search_term)
-    PazarScraper(search_term)
+    helikon = HelikonScraper(search_term)
+    orange = OrangeScraper(search_term)
+    pazar = PazarScraper(search_term)
+
+    print_books(helikon, orange, pazar)
