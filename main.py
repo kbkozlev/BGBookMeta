@@ -20,7 +20,7 @@ class BookScraperManager:
 
 
 if __name__ == "__main__":
-    search_term = ('не пипай тази книга')
+    search_term = ('Подсъзнанието може всичко')
 
     helikon = HelikonScraper(search_term)
     orange = OrangeScraper(search_term)

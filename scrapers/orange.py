@@ -1,6 +1,5 @@
 from requests_html import HTMLSession
-from .helpers.utils import format_book_details
-import re
+from .helpers.utils import format_book_details, process_title_text
 
 
 class OrangeScraper:
@@ -25,9 +24,10 @@ class OrangeScraper:
 
         for item in product_items:
             title = item.find('strong.product-item-name', first=True).text.strip()
-            processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s.]', ' ', title)).strip()
+            processed_title = process_title_text(title)
+            search = process_title_text(search_term)
 
-            if search_term.lower() in processed_title.lower():
+            if search in processed_title:
                 href = item.attrs['href']
                 self.individual_search_items.add(href)
 

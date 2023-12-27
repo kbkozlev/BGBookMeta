@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import cloudscraper
-import re
-from .helpers.utils import format_book_details
+from .helpers.utils import format_book_details, process_title_text
 
 
 class HelikonScraper:
@@ -27,9 +26,10 @@ class HelikonScraper:
 
         for item in book_items:
             a_tag = item.find('h5', class_='product-caption-title').find('a')
-            processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s.]', ' ', a_tag.text)).strip()
+            processed_title = process_title_text(a_tag.text)
+            search = process_title_text(search_term)
 
-            if search_term.lower() in processed_title.lower():
+            if search in processed_title:
                 href = a_tag.get('href')
                 self.individual_search_items.add(href)
 
@@ -48,7 +48,7 @@ class HelikonScraper:
                                 "img_src": soup.find(class_='popup-gallery-image').find('img')['src'].split('.jpg')[0] + '.jpg',
                                 "description": soup.find('div', class_='tab-pane fade in active',
                                                          id='annotation').get_text(
-                                    separator=' ', strip=True)}
+                                    separator=' ', strip=True).split('Ключови думи:')[0]}
 
                 for html_table in soup.find_all('table'):
                     table_rows = html_table.find_all('tr')

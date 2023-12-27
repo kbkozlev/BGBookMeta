@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import cloudscraper
-import re
-from .helpers.utils import format_book_details
+from .helpers.utils import format_book_details, process_title_text
 
 
 class PazarScraper:
@@ -28,9 +27,10 @@ class PazarScraper:
         # Loop through each product item and extract details
         for item in product_items:
             a_tag = item.find('div', class_='prl__title').a
-            processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s.]', ' ', a_tag.text)).strip()
+            processed_title = process_title_text(a_tag.text)
+            search = process_title_text(search_term)
 
-            if search_term.lower() in processed_title.lower():
+            if search in processed_title:
                 href = a_tag.get('href')
                 self.individual_search_items.add(href)
 
