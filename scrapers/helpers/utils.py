@@ -26,7 +26,7 @@ def format_book_details(book_details):
 
 def process_title_text(title):
     punctuation = re.escape(string.punctuation)
-    processed_title = re.sub(r'[{}]+'.format(punctuation), '', title)
+    processed_title = re.sub(r'[{}]+'.format(punctuation), ' ', title)
     processed_title = re.sub(r'\s+', ' ', processed_title)
     processed_title = processed_title.strip()
     return processed_title.lower()
