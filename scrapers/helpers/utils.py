@@ -1,10 +1,12 @@
 import re
 import string
-from .language_dict import languages
 
 
 def translate_language(language):
-    return languages.get(language.lower())
+    languages = {
+        'български': 'Bulgarian'
+    }
+    return languages.get(language.lower(), " ")
 
 
 def format_book_details(book_details):

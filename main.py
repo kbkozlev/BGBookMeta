@@ -16,7 +16,7 @@ def fetch_books_from_scrapers(*scrapers):
 
 
 if __name__ == "__main__":
-    search_term = ('Подсъзнанието може всичко')
+    search_term = ('Принц на нощта')
 
     helikon = HelikonScraper(search_term)
     orange = OrangeScraper(search_term)
