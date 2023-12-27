@@ -3,20 +3,16 @@ from scrapers.orange import OrangeScraper
 from scrapers.knizhenPazar import PazarScraper
 
 
-class BookScraperManager:
-    def __init__(self, *scrapers):
-        self.scrapers = list(scrapers)
+def fetch_books_from_scrapers(*scrapers):
+    all_books = []
 
-    def fetch_books(self):
-        all_books = []
+    for scraper in scrapers:
+        try:
+            all_books.extend(scraper.get_book_list())
+        except Exception as e:
+            print(f"Error fetching books from {type(scraper).__name__}: {e}")
 
-        for scraper in self.scrapers:
-            try:
-                all_books.extend(scraper.get_book_list())
-            except Exception as e:
-                print(f"Error fetching books from {type(scraper).__name__}: {e}")
-
-        return all_books
+    return all_books
 
 
 if __name__ == "__main__":
@@ -26,8 +22,7 @@ if __name__ == "__main__":
     orange = OrangeScraper(search_term)
     pazar = PazarScraper(search_term)
 
-    scraper_manager = BookScraperManager(helikon, orange, pazar)
-    books = scraper_manager.fetch_books()
+    books = fetch_books_from_scrapers(helikon, orange, pazar)
 
     for i, book in enumerate(books, start=1):
         print(f"Book {i}:")
