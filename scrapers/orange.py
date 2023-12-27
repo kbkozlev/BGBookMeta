@@ -1,53 +1,49 @@
-from bs4 import BeautifulSoup
-import cloudscraper
-import re
+from requests_html import HTMLSession
 from .helpers.utils import format_book_details
+import re
 
 
 class OrangeScraper:
     def __init__(self, search_term):
         self.formatted_details = []
         self.individual_search_items = set()
-        self.scraper = cloudscraper.create_scraper(
-            browser={'browser': 'firefox', 'platform': 'windows', 'mobile': False}
-        )
+
+        session = HTMLSession()
+
         url = f"https://www.orangecenter.bg/catalogsearch/result/index/?cat=2204&q={search_term}"
-        response = self.scraper.get(url)
+        response = session.get(url)
 
         if response.status_code == 200:
-            html_content = response.content
-            self.__extract_individual_search_items(html_content, search_term)
-            self.__get_book_info()
+            response.html.render()  # Render JavaScript-driven content
+            self.__extract_individual_search_items(response.html, search_term)
+            self.__get_book_info(session)
         else:
             print(f"{self.__class__.__name__} failed to fetch the main page: {response.status_code}")
 
-    def __extract_individual_search_items(self, html_content, search_term):
-        soup = BeautifulSoup(html_content, 'html.parser')
-        product_items = soup.find_all('a', class_='product-item-info')
+    def __extract_individual_search_items(self, html, search_term):
+        product_items = html.find('a.product-item-info')
 
         for item in product_items:
-            title = item.find('strong', class_='product-item-name').text.strip()
+            title = item.find('strong.product-item-name', first=True).text.strip()
             processed_title = re.sub(r'\s+', ' ', re.sub(r'[^\w\s.]', ' ', title)).strip()
 
             if search_term.lower() in processed_title.lower():
-                href = item['href']
+                href = item.attrs['href']
                 self.individual_search_items.add(href)
 
-    def __get_book_info(self):
+    def __get_book_info(self, session):
 
         for item in self.individual_search_items:
-            response = self.scraper.get(item)
+            response = session.get(item)
 
             if response.status_code == 200:
-                html_content = response.content
-                soup = BeautifulSoup(html_content, 'html.parser')
-
+                response.html.render()
                 book_details = {
-                    "book_title": soup.find('span', {'class': 'base', 'data-ui-id': 'page-title-wrapper'}).get_text(),
-                    "img_src": soup.find("meta", property="og:image")['content'],
+                    "book_title": response.html.find('span.base[data-ui-id="page-title-wrapper"]', first=True).text,
+                    "img_src": response.html.find("img.fotorama__img", first=True).attrs['src'],
                     "description": ' '.join(paragraph.text.strip() for paragraph in
-                                            soup.find('div', class_='description').find('div', class_='text').find_all(
-                                                'p'))}
+                                            response.html.find('div.description div.text p'))
+                }
 
                 specific_elements = {
                     'Автор': 'author',
@@ -57,17 +53,17 @@ class OrangeScraper:
                     'ISBN': 'ISBN'
                 }
 
-                ul_elements = soup.find_all('ul', class_='attributes__list')
+                ul_elements = response.html.find('ul.attributes__list')
 
                 for ul in ul_elements:
-                    li_elements = ul.find_all('li', class_='attributes__item')
+                    li_elements = ul.find('li.attributes__item')
                     for li in li_elements:
-                        key_element = li.find('span', class_='attributes__item-title')
-                        value_element = li.find('span', class_='attributes__item-info')
+                        key_element = li.find('span.attributes__item-title', first=True)
+                        value_element = li.find('span.attributes__item-info', first=True)
                         if key_element and value_element:
-                            key = key_element.get_text(strip=True)
+                            key = key_element.text.strip()
                             if key in specific_elements:
-                                value = value_element.get_text(strip=True)
+                                value = value_element.text.strip()
                                 book_details[specific_elements[key]] = value
 
                 self.__format_book_details(book_details)

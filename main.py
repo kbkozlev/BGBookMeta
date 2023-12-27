@@ -20,10 +20,10 @@ class BookScraperManager:
 
 
 if __name__ == "__main__":
-    search_term = 'стаята на тайните'
+    search_term = ('не пипай тази книга')
 
-    helikon = HelikonScraper(search_term),
-    orange = OrangeScraper(search_term),
+    helikon = HelikonScraper(search_term)
+    orange = OrangeScraper(search_term)
     pazar = PazarScraper(search_term)
 
     scraper_manager = BookScraperManager(helikon, orange, pazar)
