@@ -16,7 +16,7 @@ def fetch_books_from_scraper(scraper):
 if __name__ == "__main__":
     start_time = time.time()  # Record the start time
 
-    search_term = 'сойка присмехулка'
+    search_term = 'Списъкът "Октомври"'
 
     helikon = HelikonScraper(search_term)
     orange = OrangeScraper(search_term)

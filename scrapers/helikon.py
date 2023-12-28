@@ -44,7 +44,7 @@ class HelikonScraper:
                 soup = BeautifulSoup(html_content, 'html.parser')
 
                 book_details = {"book_title": soup.find(class_='_box-highlight').find('h3').text.strip(),
-                                "author": soup.find(class_='_box-highlight').find('h5').text.strip('Автор: '),
+                                "author": soup.find(class_='_box-highlight').find('h5').text.replace('Автор: ', '').strip(),
                                 "img_src": soup.find(class_='popup-gallery-image').find('img')['src'].split('.jpg')[0] + '.jpg',
                                 "description": soup.find('div', class_='tab-pane fade in active',
                                                          id='annotation').get_text(

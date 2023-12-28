@@ -45,7 +45,7 @@ class OrangeScraper:
                                             response.html.find('div.description div.text p'))
                 }
 
-                specific_elements = {
+                key_mapping = {
                     'Автор': 'author',
                     'Издателство': 'publisher',
                     'Език': 'language',
@@ -62,9 +62,9 @@ class OrangeScraper:
                         value_element = li.find('span.attributes__item-info', first=True)
                         if key_element and value_element:
                             key = key_element.text.strip()
-                            if key in specific_elements:
+                            if key in key_mapping:
                                 value = value_element.text.strip()
-                                book_details[specific_elements[key]] = value
+                                book_details[key_mapping[key]] = value
 
                 self.__format_book_details(book_details)
 
