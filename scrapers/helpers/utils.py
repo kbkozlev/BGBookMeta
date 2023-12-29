@@ -2,7 +2,7 @@ import re
 from typing import Dict
 
 
-def translate_language(language):
+def translate_language(language: str) -> str:
     languages = {
         'български': 'Bulgarian'
     }

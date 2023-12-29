@@ -50,14 +50,16 @@ class BibliomanScraper:
                                soup.find('a', class_='thumb-link')['href'].split('.jpg')[
                                    0] + '.jpg',
                     "description": ''.join(p.get_text(strip=True) for p in
-                                           soup.find(class_='col-md-8 entity-field entity-field-annotation').find_all(
-                                               'p')),
+                                           soup.find(class_='col-md-8 entity-field entity-field-annotation').find_all('p'))
+                    if soup.find(class_='col-md-8 entity-field entity-field-annotation') else '',
                     "publisher": soup.find(class_='col-md-8 entity-field entity-field-publisher').find(
                         'a').text.strip(),
                     "language": soup.find(class_='col-md-8 entity-field entity-field-language').find('a').text.strip(),
                     "publication_year": soup.find(class_='col-md-8 entity-field entity-field-publishingYear').find(
                         'a').text.strip(),
-                    "ISBN": soup.find(class_='col-md-8 entity-field entity-field-isbn').find('a').text.replace('-', '').strip(),
+                    "ISBN": (soup.find(class_='col-md-8 entity-field entity-field-isbn').find('a').text.replace('-', '')
+                             .strip() if (soup.find(class_='col-md-8 entity-field entity-field-isbn')
+                                          and soup.find(class_='col-md-8 entity-field entity-field-isbn').find('a')) else ""),
                     "tags": soup.find(class_='col-md-8 entity-field entity-field-category').find('a').text.strip(),
                     }
 

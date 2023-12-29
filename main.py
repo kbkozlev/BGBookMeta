@@ -17,7 +17,7 @@ def fetch_books_from_scraper(scraper):
 if __name__ == "__main__":
     start_time = time.time()  # Record the start time
 
-    search_term = 'Кондора се завръща'
+    search_term = input('Book Title: ') or 'Сойка-Присмехулка'
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         books_from_pazar = executor.submit(fetch_books_from_scraper, PazarScraper(search_term)).result()
         books_from_biblioman = executor.submit(fetch_books_from_scraper, BibliomanScraper(search_term)).result()
 
-    all_books = books_from_helikon + books_from_orange + books_from_pazar + books_from_biblioman
+    all_books = books_from_biblioman + books_from_helikon + books_from_orange + books_from_pazar
 
     for i, book in enumerate(all_books, start=1):
         print(f"Book {i}:")
