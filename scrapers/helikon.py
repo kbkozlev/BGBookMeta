@@ -24,7 +24,6 @@ class HelikonScraper:
                 break
             elif response.status_code == 403:
                 retry_count += 1
-                print(f"{self.__class__.__name__} failed to fetch the main page: {response.status_code} \nRetrying {retry_count}/3!")
                 time.sleep(1)
             else:
                 print(f"{self.__class__.__name__} failed to fetch the main page: {response.status_code}")
