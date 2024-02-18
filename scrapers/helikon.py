@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import cloudscraper
 from .helpers.utils import format_book_details, process_title_text
+import time
 
 
 class HelikonScraper:
@@ -10,15 +11,24 @@ class HelikonScraper:
         self.scraper = cloudscraper.create_scraper(
             browser={'browser': 'firefox', 'platform': 'windows', 'mobile': False}
         )
-        url = f"https://g.helikon.bg/search/?q={search_term}"
-        response = self.scraper.get(url)
+        url = f"https://helikon.bg/search/?q={search_term}"
+        retry_count = 0
 
-        if response.status_code == 200:
-            html_content = response.content
-            self.__extract_individual_search_items(html_content, search_term)
-            self.__get_book_info()
-        else:
-            print(f"{self.__class__.__name__} failed to fetch the main page: {response.status_code}")
+        while retry_count < 3:
+            response = self.scraper.get(url)
+
+            if response.status_code == 200:
+                html_content = response.content
+                self.__extract_individual_search_items(html_content, search_term)
+                self.__get_book_info()
+                break
+            elif response.status_code == 403:
+                retry_count += 1
+                print(f"{self.__class__.__name__} failed to fetch the main page: {response.status_code} \nRetrying {retry_count/3}!")
+                time.sleep(1)
+            else:
+                print(f"{self.__class__.__name__} failed to fetch the main page: {response.status_code}")
+                break
 
     def __extract_individual_search_items(self, html_content, search_term):
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -37,40 +47,50 @@ class HelikonScraper:
 
         for item in self.individual_search_items:
             url = f"https://g.helikon.bg{item}"
-            response = self.scraper.get(url)
+            retry_count = 0
 
-            if response.status_code == 200:
-                html_content = response.content
-                soup = BeautifulSoup(html_content, 'html.parser')
+            while retry_count < 3:
+                response = self.scraper.get(url)
 
-                book_details = {"book_title": soup.find(class_='_box-highlight').find('h3').text.strip(),
-                                "author": soup.find(class_='_box-highlight').find('h5').text.replace('Автор: ', '').strip(),
-                                "img_src": soup.find(class_='popup-gallery-image').find('img')['src'].split('.jpg')[0] + '.jpg',
-                                "description": soup.find('div', class_='tab-pane fade in active',
-                                                         id='annotation').get_text(
-                                    separator=' ', strip=True).split('Ключови думи:')[0]}
+                if response.status_code == 200:
+                    html_content = response.content
+                    soup = BeautifulSoup(html_content, 'html.parser')
 
-                for html_table in soup.find_all('table'):
-                    table_rows = html_table.find_all('tr')
-                    for row in table_rows:
-                        cells = row.find_all('td')
-                        if len(cells) == 2:
-                            key = cells[0].text.strip()
-                            value = cells[1].text.strip()
-                            key_mapping = {
-                                'Издател': 'publisher',
-                                'Език': 'language',
-                                'Година на издаване': 'publication_year',
-                                'ISBN': 'ISBN',
-                                'Категории': 'tags',
-                            }
-                            if key in key_mapping:
-                                book_details[key_mapping[key]] = value
+                    book_details = {"book_title": soup.find(class_='_box-highlight').find('h3').text.strip(),
+                                    "author": soup.find(class_='_box-highlight').find('h5').text.replace('Автор: ',
+                                                                                                         '').strip(),
+                                    "img_src": soup.find(class_='popup-gallery-image').find('img')['src'].split('.jpg')[
+                                                   0] + '.jpg',
+                                    "description": soup.find('div', class_='tab-pane fade in active',
+                                                             id='annotation').get_text(
+                                        separator=' ', strip=True).split('Ключови думи:')[0]}
 
-                self.__format_book_details(book_details)
+                    for html_table in soup.find_all('table'):
+                        table_rows = html_table.find_all('tr')
+                        for row in table_rows:
+                            cells = row.find_all('td')
+                            if len(cells) == 2:
+                                key = cells[0].text.strip()
+                                value = cells[1].text.strip()
+                                key_mapping = {
+                                    'Издател': 'publisher',
+                                    'Език': 'language',
+                                    'Година на издаване': 'publication_year',
+                                    'ISBN': 'ISBN',
+                                    'Категории': 'tags',
+                                }
+                                if key in key_mapping:
+                                    book_details[key_mapping[key]] = value
 
-            else:
-                print(f"{self.__class__.__name__} failed to fetch {url}: {response.status_code}")
+                    self.__format_book_details(book_details)
+                    break
+                elif response.status_code == 403:
+                    retry_count += 1
+                    print(f"Retrying ({retry_count}/3) after receiving a 403 error for {url}...")
+                    time.sleep(1)  # Add a delay before retrying
+                else:
+                    print(f"{self.__class__.__name__} failed to fetch {url}: {response.status_code}")
+                    break
 
     def __format_book_details(self, book_details):
         formatted_details = format_book_details(book_details)
