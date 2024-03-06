@@ -6,6 +6,7 @@ from scrapers.biblioman import BibliomanScraper
 import concurrent.futures
 from scrapers.helpers.utils import clear_screen
 from advancedprinter import print, line, input
+import threading
 
 
 def fetch_books_from_scraper(scraper):
@@ -16,23 +17,50 @@ def fetch_books_from_scraper(scraper):
         return []
 
 
+def search_progress():
+    print("\nSearching, please wait", end='', flush=True)
+    while not search_completed:
+        for _ in range(3):
+            print(".", end='', flush=True)
+            time.sleep(0.5)
+        print("\b\b\b   \b\b\b", end='', flush=True)  # Clearing the dots
+        time.sleep(0.5)
+
+
 def main():
+    global search_completed
     while True:
         clear_screen()
         start_time = time.time()
 
         search_term = input("Book Title: ", c='blue1')  # or 'Сойка-Присмехулка'  # Remove first comment for testing purposes
 
+        searching_thread = threading.Thread(target=search_progress)
+        searching_thread.start()
+
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            books_from_helikon = executor.submit(fetch_books_from_scraper, HelikonScraper(search_term)).result()
-            books_from_orange = executor.submit(fetch_books_from_scraper, OrangeScraper(search_term)).result()
-            books_from_pazar = executor.submit(fetch_books_from_scraper, PazarScraper(search_term)).result()
-            books_from_biblioman = executor.submit(fetch_books_from_scraper, BibliomanScraper(search_term)).result()
+            futures = [
+                executor.submit(fetch_books_from_scraper, HelikonScraper(search_term)),
+                executor.submit(fetch_books_from_scraper, OrangeScraper(search_term)),
+                executor.submit(fetch_books_from_scraper, PazarScraper(search_term)),
+                executor.submit(fetch_books_from_scraper, BibliomanScraper(search_term))
+            ]
+
+            # Wait for all tasks to complete
+            concurrent.futures.wait(futures)
+
+            # Retrieve results
+            books_from_helikon, books_from_orange, books_from_pazar, books_from_biblioman = [future.result() for future
+                                                                                             in futures]
+
+        search_completed = True
+        searching_thread.join()  # Wait for the search thread to finish
+        print("\b \b" * 30, end='', flush=True)  # Used to clear the 'Searching' text
 
         all_books = books_from_biblioman + books_from_helikon + books_from_orange + books_from_pazar
 
         for i, book in enumerate(all_books, start=1):
-            print(f"\nBook {i}:", c='green2')
+            print(f"Book {i}:", c='green2')
             for key, value in book.items():
                 print(f"""{line(f'{key}', c='cyan')}: {value}""")
 
@@ -46,4 +74,5 @@ def main():
 
 
 if __name__ == "__main__":
+    search_completed = False
     main()
