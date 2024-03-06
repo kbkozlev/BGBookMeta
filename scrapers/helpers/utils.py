@@ -1,5 +1,13 @@
 import re
 from typing import Dict
+import os
+
+
+def clear_screen():
+    if os.name == 'nt':  # for Windows
+        os.system('cls')
+    else:  # for Linux/Mac
+        os.system('clear')
 
 
 def translate_language(language: str) -> str:
@@ -20,15 +28,15 @@ def format_book_details(book_details: Dict[str, str]) -> Dict[str, str]:
     - Dict[str, str]: Formatted book details dictionary with specified keys.
     """
     formatted_details = {
-        "book_title": book_details.get("book_title", ""),
-        "author": book_details.get("author", ""),
-        "publisher": book_details.get("publisher", ""),
+        "Book Title": book_details.get("book_title", ""),
+        "Author": book_details.get("author", ""),
+        "Publisher": book_details.get("publisher", ""),
         "ISBN": book_details.get("ISBN", ""),
-        "language": translate_language(book_details.get("language", "")),  # Assuming translate_language is a defined function
-        "publication_year": book_details.get("publication_year", ""),
-        "img_src": book_details.get("img_src", ""),
-        "tags": book_details.get("tags", ""),
-        "description": book_details.get("description", "")
+        "Language": translate_language(book_details.get("language", "")),
+        "Publication Year": book_details.get("publication_year", ""),
+        "Cover": book_details.get("img_src", ""),
+        "Tags": book_details.get("tags", ""),
+        "Description": book_details.get("description", "")
     }
     return formatted_details
 
