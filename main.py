@@ -25,6 +25,7 @@ def search_progress():
             time.sleep(0.5)
         print("\b\b\b   \b\b\b", end='', flush=True)  # Clearing the dots
         time.sleep(0.5)
+    print("\b \b" * 30, end='', flush=True)  # Used to clear the 'Searching' text
 
 
 def main():
@@ -55,7 +56,6 @@ def main():
 
         search_completed = True
         searching_thread.join()  # Wait for the search thread to finish
-        print("\b \b" * 30, end='', flush=True)  # Used to clear the 'Searching' text
 
         all_books = books_from_biblioman + books_from_helikon + books_from_orange + books_from_pazar
 
