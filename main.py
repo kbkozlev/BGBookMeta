@@ -21,7 +21,7 @@ def main():
         clear_screen()
         start_time = time.time()
 
-        search_term = input(f"Book Title: ", c='blue1')  # or 'Сойка-Присмехулка'  # Remove first comment for testing purposes
+        search_term = input("Book Title: ", c='blue1')  # or 'Сойка-Присмехулка'  # Remove first comment for testing purposes
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             books_from_helikon = executor.submit(fetch_books_from_scraper, HelikonScraper(search_term)).result()

@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import cloudscraper
-from .helpers.utils import format_book_details, process_title_text
+from scrapers.helpers.utils import format_book_details, process_title_text
 
 
 class PazarScraper:
