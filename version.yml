@@ -1,0 +1,12 @@
+Version: 1.0.0
+CompanyName: Kaloian Kozlev
+FileDescription: Web Scraper for Metadata of books written in Bulgarian.
+InternalName: BGBookMeta
+LegalCopyright: © 2023 Kaloian Kozlev. All rights reserved.
+OriginalFilename: BGBookMeta.exe
+ProductName: BGBookMeta
+Translation:
+  - langID: 0
+    charsetID: 1200
+  - langID: 1033
+    charsetID: 1252
