@@ -11,6 +11,25 @@ Currently, the tool scrapes the following websites:
 ### Example below:
  ![Example1](https://i.imgur.com/RzLQ1nl.png)
  
+### Download and Run
+
+#### Windows
+```bash
+curl -LO https://github.com/kbkozlev/BGBookMeta/archive/refs/heads/master.zip
+tar -xf master.zip
+cd BGBookMeta-master
+pip install -r requirements.txt
+python main.py
+```
+
+#### Linux
+```bash
+wget https://github.com/kbkozlev/BGBookMeta/archive/refs/heads/master.zip
+unzip master.zip
+cd BGBookMeta-master
+pip install -r requirements.txt
+python main.py
+```
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
