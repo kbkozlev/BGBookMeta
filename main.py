@@ -48,6 +48,7 @@ def main():
                     executor.submit(fetch_books_from_scraper, PazarScraper(search_term)),
                     executor.submit(fetch_books_from_scraper, BibliomanScraper(search_term))
                 ]
+                # TODO: To add more scrapers - www.goodreads.com, www.elixiria.bg, knigite.eu
 
                 # Wait for all tasks to complete
                 concurrent.futures.wait(futures)
