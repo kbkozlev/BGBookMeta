@@ -45,7 +45,8 @@ class PazarScraper:
 
                 book_details = {
                     "book_title": soup.find('h1', {'class': 'm_title margin_top_5 margin_bottom_0'}).get_text(),
-                    "author": soup.find('h2', {'class': 'margin_top_20 margin_bottom_5 no_b'}).get_text(),
+                    "author": soup.find('h2', {'class': 'margin_top_20 margin_bottom_5 no_b'}).get_text()
+                    if soup.find('h2', {'class': 'margin_top_20 margin_bottom_5 no_b'}) else "",
                     "img_src": '' if soup.find('img', class_='prdp__book_img')['src'].startswith('/assets/') else
                     soup.find('img', class_='prdp__book_img')['src']}
 
