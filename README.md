@@ -12,9 +12,9 @@ Currently, the tool scrapes the following websites:
  ![Example1](https://i.imgur.com/RzLQ1nl.png)
  
 ### Download and Run
+<a href="https://github.com/kbkozlev/BGBookMeta/releases/latest/download/BGBookMeta.zip">Download</a> the latest release or use the command line to download the source code:
 
 #### Windows
-You can download the latest <a href="https://github.com/kbkozlev/BGBookMeta/releases/latest/download/BGBookMeta.zip">release</a> or use the command line to download the source code:
 ```bash
 curl -LO https://github.com/kbkozlev/BGBookMeta/archive/refs/heads/master.zip
 tar -xf master.zip
