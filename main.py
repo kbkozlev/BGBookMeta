@@ -34,8 +34,8 @@ def main():
     while True:
         search_completed = False
         clear()
-        search_term = input("Book Title: ",
-                            c='blue1') or 'Сойка-Присмехулка'  # Remove first comment for testing purposes
+        # Remove comment below for testing purposes
+        search_term = input("Book Title: ", c='blue1')  # or 'Сойка-Присмехулка'
 
         if search_term != '':
             searching_thread = threading.Thread(target=search_progress)
