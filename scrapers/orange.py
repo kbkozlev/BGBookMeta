@@ -9,7 +9,7 @@ class OrangeScraper:
 
         session = HTMLSession()
 
-        url = f"https://www.orangecenter.bg/catalogsearch/result/index/?cat=2204&q={search_term}"
+        url = f"https://www.orangecenter.bg/catalogsearch/result/?q={search_term}"
         response = session.get(url)
 
         if response.status_code == 200:

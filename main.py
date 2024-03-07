@@ -34,35 +34,47 @@ def main():
     while True:
         search_completed = False
         clear()
-        search_term = input("Book Title: ", c='blue1')  # or 'Сойка-Присмехулка'  # Remove first comment for testing purposes
+        search_term = input("Book Title: ",
+                            c='blue1') or 'Сойка-Присмехулка'  # Remove first comment for testing purposes
 
         if search_term != '':
             searching_thread = threading.Thread(target=search_progress)
             searching_thread.start()
 
             start_time = time.time()
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = [
-                    executor.submit(fetch_books_from_scraper, HelikonScraper(search_term)),
-                    executor.submit(fetch_books_from_scraper, OrangeScraper(search_term)),
-                    executor.submit(fetch_books_from_scraper, PazarScraper(search_term)),
-                    executor.submit(fetch_books_from_scraper, BibliomanScraper(search_term))
-                ]
-                # TODO: To add more scrapers - www.goodreads.com, www.elixiria.bg, knigite.eu
 
-                # Wait for all tasks to complete
-                concurrent.futures.wait(futures)
+            try:
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    futures = [
+                        executor.submit(fetch_books_from_scraper, HelikonScraper(search_term)),  # Issues with cloudflare
+                        executor.submit(fetch_books_from_scraper, OrangeScraper(search_term)),
+                        executor.submit(fetch_books_from_scraper, PazarScraper(search_term)),
+                        executor.submit(fetch_books_from_scraper, BibliomanScraper(search_term))
+                    ]
+                    # TODO: To add more scrapers - www.goodreads.com, www.elixiria.bg, knigite.eu
 
-                # Retrieve results
-                books_from_helikon, books_from_orange, books_from_pazar, books_from_biblioman = [future.result() for future
-                                                                                                 in futures]
+                    # Wait for all tasks to complete
+                    concurrent.futures.wait(futures)
 
-            search_completed = True
-            searching_thread.join()  # Wait for the search thread to finish
+                    # Retrieve results
+                    # all_books = books_from_biblioman + books_from_helikon + books_from_orange + books_from_pazar
+                    all_books = []
+                    for future in concurrent.futures.as_completed(futures):
+                        all_books.extend(future.result())
 
-            all_books = books_from_biblioman + books_from_helikon + books_from_orange + books_from_pazar
+            except Exception as e:
+                print(e)
+                break
 
-            for i, book in enumerate(all_books, start=1):
+            finally:
+                search_completed = True
+                searching_thread.join()  # Wait for the search thread to finish
+
+            # Sort all_books based on the number of non-empty values
+            sorted_books = sorted(all_books, key=lambda books: sum(2 if k == "description" and len(str(val)) > 1 else 1 if len(
+                str(val)) > 1 else 0 for k, val in books.items()), reverse=True)
+
+            for i, book in enumerate(sorted_books, start=1):
                 print(f"\nBook {i}:", c='green2')
                 for key, value in book.items():
                     print(f"""{line(f'{key}', c='cyan')}: {value}""")

@@ -22,12 +22,10 @@ class HelikonScraper:
                 self.__extract_individual_search_items(html_content, search_term)
                 self.__get_book_info()
                 break
+
             elif response.status_code == 403:
                 retry_count += 1
                 time.sleep(1)
-            else:
-                print(f"{self.__class__.__name__} failed to fetch the main page: {response.status_code}")
-                break
 
     def __extract_individual_search_items(self, html_content, search_term):
         soup = BeautifulSoup(html_content, 'html.parser')
