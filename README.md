@@ -29,7 +29,7 @@ wget https://github.com/kbkozlev/BGBookMeta/archive/refs/heads/master.zip
 unzip master.zip
 cd BGBookMeta-master
 pip install -r requirements.txt
-python main.py
+python3 main.py
 ```
 ## License
 
