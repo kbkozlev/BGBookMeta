@@ -37,7 +37,7 @@ def main():
         # Remove comment below for testing purposes
         search_term = input("Book Title: ", c='blue1')  # or 'Сойка-Присмехулка'
 
-        if search_term != '':
+        if search_term.strip() != '':
             searching_thread = threading.Thread(target=search_progress)
             searching_thread.start()
 
@@ -57,7 +57,6 @@ def main():
                     concurrent.futures.wait(futures)
 
                     # Retrieve results
-                    # all_books = books_from_biblioman + books_from_helikon + books_from_orange + books_from_pazar
                     all_books = []
                     for future in concurrent.futures.as_completed(futures):
                         all_books.extend(future.result())
@@ -71,7 +70,7 @@ def main():
                 searching_thread.join()  # Wait for the search thread to finish
 
             # Sort all_books based on the number of non-empty values
-            sorted_books = sorted(all_books, key=lambda books: sum(2 if k == "description" and len(str(val)) > 1 else 1 if len(
+            sorted_books = sorted(all_books, key=lambda books: sum(3 if k == "description" and len(str(val)) > 1 else 1 if len(
                 str(val)) > 1 else 0 for k, val in books.items()), reverse=True)
 
             for i, book in enumerate(sorted_books, start=1):
@@ -83,8 +82,8 @@ def main():
             execution_time = end_time - start_time
             print(f"""\n{line(f"Execution time:", c='blue1')} {round(execution_time)}s""")
 
-        exit_check = input("\nPress Enter to continue or 'exit': ", c='yellow')
-        if exit_check.strip() == 'exit':
+        exit_check = input("\nPress Enter to continue or 'e' to exit: ", c='yellow')
+        if exit_check.strip().lower() != '':
             break
 
 
