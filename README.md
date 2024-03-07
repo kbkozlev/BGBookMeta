@@ -18,7 +18,7 @@ Currently, the tool scrapes the following websites:
 ```bash
 curl -LO https://github.com/kbkozlev/BGBookMeta/archive/refs/heads/master.zip
 tar -xf master.zip
-cd BGBookMeta-master/src
+cd BGBookMeta-master
 pip install -r requirements.txt
 python main.py
 ```
@@ -27,7 +27,7 @@ python main.py
 ```bash
 wget https://github.com/kbkozlev/BGBookMeta/archive/refs/heads/master.zip
 unzip master.zip
-cd BGBookMeta-master/src
+cd BGBookMeta-master
 pip install -r requirements.txt
 python main.py
 ```
