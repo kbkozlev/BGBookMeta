@@ -1,5 +1,5 @@
 from requests_html import HTMLSession
-from src.scrapers.helpers.utils import format_book_details, process_title_text
+from src.helpers.utils import format_book_details, process_title_text
 
 
 class OrangeScraper:

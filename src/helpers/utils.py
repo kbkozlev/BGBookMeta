@@ -3,13 +3,6 @@ from typing import Dict
 import os
 
 
-def clear_screen():
-    if os.name == 'nt':  # for Windows
-        os.system('cls')
-    else:  # for Linux/Mac
-        os.system('clear')
-
-
 def translate_language(language: str) -> str:
     languages = {
         'български': 'Bulgarian'

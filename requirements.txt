@@ -2,3 +2,4 @@ AdvancedPrinter==1.2.0
 beautifulsoup4==4.12.3
 cloudscraper==1.2.71
 requests_html==0.10.0
+clear-screen==0.1.14

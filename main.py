@@ -1,10 +1,10 @@
 import time
 import threading
 import concurrent.futures
-from scrapers.helikon import HelikonScraper
-from scrapers.orange import OrangeScraper
-from scrapers.knizhenPazar import PazarScraper
-from scrapers.biblioman import BibliomanScraper
+from src.scrapers.helikon import HelikonScraper
+from src.scrapers.orange import OrangeScraper
+from src.scrapers.knizhenPazar import PazarScraper
+from src.scrapers.biblioman import BibliomanScraper
 from advancedprinter import print, line, input
 from clear_screen import clear
 
