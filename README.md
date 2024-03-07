@@ -12,13 +12,13 @@ Currently, the tool scrapes the following websites:
  ![Example1](https://i.imgur.com/RzLQ1nl.png)
  
 ### Download and Run
-<a href="https://github.com/kbkozlev/BGBookMeta/releases/latest/download/BGBookMeta.zip">Download</a> the latest release or use the command line to download the source code:
+<a href="https://github.com/kbkozlev/BGBookMeta/releases/latest/download/BGBookMeta.exe">Download</a> the latest release or use the command line to download the source code:
 
 #### Windows
 ```bash
 curl -LO https://github.com/kbkozlev/BGBookMeta/archive/refs/heads/master.zip
 tar -xf master.zip
-cd BGBookMeta-master
+cd BGBookMeta-master/src
 pip install -r requirements.txt
 python main.py
 ```
@@ -27,7 +27,7 @@ python main.py
 ```bash
 wget https://github.com/kbkozlev/BGBookMeta/archive/refs/heads/master.zip
 unzip master.zip
-cd BGBookMeta-master
+cd BGBookMeta-master/src
 pip install -r requirements.txt
 python main.py
 ```
