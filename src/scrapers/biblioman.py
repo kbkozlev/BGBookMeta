@@ -47,16 +47,13 @@ class BibliomanScraper:
                     "book_title": soup.find(class_='col-md-8 entity-field entity-field-title').find('a').text.strip(),
                     "author": soup.find(class_='col-md-8 entity-field entity-field-author').find('a').text.rstrip(),
                     "img_src": "https://biblioman.chitanka.info/" +
-                               soup.find('a', class_='thumb-link')['href'].split('.jpg')[
-                                   0] + '.jpg',
+                               soup.find('a', class_='thumb-link')['href'].split('.jpg')[0] + '.jpg',
                     "description": ''.join(p.get_text(strip=True) for p in
                                            soup.find(class_='col-md-8 entity-field entity-field-annotation').find_all('p'))
                     if soup.find(class_='col-md-8 entity-field entity-field-annotation') else '',
-                    "publisher": soup.find(class_='col-md-8 entity-field entity-field-publisher').find(
-                        'a').text.strip(),
+                    "publisher": soup.find(class_='col-md-8 entity-field entity-field-publisher').find('a').text.strip(),
                     "language": soup.find(class_='col-md-8 entity-field entity-field-language').find('a').text.strip(),
-                    "publication_year": soup.find(class_='col-md-8 entity-field entity-field-publishingYear').find(
-                        'a').text.strip(),
+                    "publication_year": soup.find(class_='col-md-8 entity-field entity-field-publishingYear').find('a').text.strip(),
                     "ISBN": (soup.find(class_='col-md-8 entity-field entity-field-isbn').find('a').text.replace('-', '')
                              .strip() if (soup.find(class_='col-md-8 entity-field entity-field-isbn')
                                           and soup.find(class_='col-md-8 entity-field entity-field-isbn').find('a')) else ""),
