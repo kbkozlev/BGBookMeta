@@ -6,7 +6,7 @@ from src.scrapers.orange import OrangeScraper
 from src.scrapers.knizhenPazar import PazarScraper
 from src.scrapers.biblioman import BibliomanScraper
 from advancedprinter import print, line, input
-from clear import clear
+from src.helpers.utils import clear_screen
 
 
 def fetch_books_from_scraper(scraper):
@@ -31,8 +31,9 @@ def search_progress():
 
 def main():
     global search_completed
+
     while True:
-        clear()
+        clear_screen()
         search_completed = False
         # Remove comment below for testing purposes
         search_term = input("Book Title: ", c='blue1')  # or 'Сойка-Присмехулка'

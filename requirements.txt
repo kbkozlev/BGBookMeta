@@ -3,4 +3,3 @@ beautifulsoup4~=4.12.3
 cloudscraper~=1.2.71
 requests_html~=0.10.0
 bs4~=0.0.2
-clear~=2.0.0
