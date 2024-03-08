@@ -6,7 +6,7 @@ from src.scrapers.orange import OrangeScraper
 from src.scrapers.knizhenPazar import PazarScraper
 from src.scrapers.biblioman import BibliomanScraper
 from advancedprinter import print, line, input
-from clear_screen import clear
+from clear import clear
 
 
 def fetch_books_from_scraper(scraper):
