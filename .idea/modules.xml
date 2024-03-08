@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/BGMeta.iml" filepath="$PROJECT_DIR$/.idea/BGMeta.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/BGBookMeta.iml" filepath="$PROJECT_DIR$/.idea/BGBookMeta.iml" />
     </modules>
   </component>
 </project>

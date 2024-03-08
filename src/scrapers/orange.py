@@ -33,43 +33,50 @@ class OrangeScraper:
 
     def __get_book_info(self, session):
 
-        for item in self.individual_search_items:
-            response = session.get(item)
+        try:
+            for item in self.individual_search_items:
+                response = session.get(item)
 
-            if response.status_code == 200:
-                response.html.render()
-                book_details = {
-                    "book_title": response.html.find('span.base[data-ui-id="page-title-wrapper"]', first=True).text,
-                    "img_src": response.html.find("img.fotorama__img", first=True).attrs['src'],
-                    "description": ' '.join(paragraph.text.strip() for paragraph in
-                                            response.html.find('div.description div.text p'))
-                }
+                if response.status_code == 200:
+                    response.html.render()
+                    book_details = {
+                        "book_title": response.html.find('span.base[data-ui-id="page-title-wrapper"]', first=True).text,
+                        "img_src": response.html.find("img.fotorama__img", first=True).attrs['src'],
+                        "description": ' '.join(paragraph.text.strip() for paragraph in
+                                                response.html.find('div.description div.text p'))
+                    }
 
-                key_mapping = {
-                    'Автор': 'author',
-                    'Издателство': 'publisher',
-                    'Език': 'language',
-                    'Година на издаване': 'publication_year',
-                    'ISBN': 'ISBN'
-                }
+                    key_mapping = {
+                        'Автор': 'author',
+                        'Издателство': 'publisher',
+                        'Език': 'language',
+                        'Година на издаване': 'publication_year',
+                        'ISBN': 'ISBN'
+                    }
 
-                ul_elements = response.html.find('ul.attributes__list')
+                    ul_elements = response.html.find('ul.attributes__list')
 
-                for ul in ul_elements:
-                    li_elements = ul.find('li.attributes__item')
-                    for li in li_elements:
-                        key_element = li.find('span.attributes__item-title', first=True)
-                        value_element = li.find('span.attributes__item-info', first=True)
-                        if key_element and value_element:
-                            key = key_element.text.strip()
-                            if key in key_mapping:
-                                value = value_element.text.strip()
-                                book_details[key_mapping[key]] = value
+                    for ul in ul_elements:
+                        li_elements = ul.find('li.attributes__item')
+                        for li in li_elements:
+                            key_element = li.find('span.attributes__item-title', first=True)
+                            value_element = li.find('span.attributes__item-info', first=True)
+                            if key_element and value_element:
+                                key = key_element.text.strip()
+                                if key in key_mapping:
+                                    value = value_element.text.strip()
+                                    book_details[key_mapping[key]] = value
 
-                self.__format_book_details(book_details)
+                    self.__format_book_details(book_details)
 
-            else:
-                print(f"{self.__class__.__name__} failed to fetch {item}: {response.status_code}")
+                else:
+                    raise Exception(f"{self.__class__.__name__} failed to fetch {item}: {response.status_code}")
+
+        except Exception as e:
+            print(e)
+
+        finally:
+            session.close()
 
     def __format_book_details(self, book_details):
         formatted_details = format_book_details(book_details)
