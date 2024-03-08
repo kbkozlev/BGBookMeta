@@ -32,8 +32,8 @@ def search_progress():
 def main():
     global search_completed
     while True:
-        search_completed = False
         clear()
+        search_completed = False
         # Remove comment below for testing purposes
         search_term = input("Book Title: ", c='blue1')  # or 'Сойка-Присмехулка'
 
@@ -51,7 +51,7 @@ def main():
                         executor.submit(fetch_books_from_scraper, PazarScraper(search_term)),
                         executor.submit(fetch_books_from_scraper, BibliomanScraper(search_term))
                     ]
-                    # TODO: To add more scrapers - www.goodreads.com, www.elixiria.bg, knigite.eu
+                    # TODO: To add more scrapers - www.goodreads.com
 
                     # Wait for all tasks to complete
                     concurrent.futures.wait(futures)
@@ -70,7 +70,7 @@ def main():
                 searching_thread.join()  # Wait for the search thread to finish
 
             # Sort all_books based on the number of non-empty values
-            sorted_books = sorted(all_books, key=lambda books: sum(3 if k == "description" and len(str(val)) > 1 else 1 if len(
+            sorted_books = sorted(all_books, key=lambda books: sum(3 if k.lower() == "description" and len(str(val)) > 1 else 1 if len(
                 str(val)) > 1 else 0 for k, val in books.items()), reverse=True)
 
             for i, book in enumerate(sorted_books, start=1):
@@ -80,7 +80,11 @@ def main():
 
             end_time = time.time()
             execution_time = end_time - start_time
-            print(f"""\n{line(f"Execution time:", c='blue1')} {round(execution_time)}s""")
+            minutes = int(execution_time // 60)
+            seconds = int(execution_time % 60)
+
+            time_text = f"{line(f'Execution time:', c='blue1')}"
+            print(f"""\n{time_text} {minutes}m {seconds}s""" if minutes > 0 else f"""\n{time_text} {seconds}s""")
 
         exit_check = input("\nPress Enter to continue or 'e' to exit: ", c='yellow')
         if exit_check.strip().lower() != '':
