@@ -47,7 +47,7 @@ def main():
             try:
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                     futures = [
-                        executor.submit(fetch_books_from_scraper, HelikonScraper(search_term)),  # Issues with cloudflare
+                        # executor.submit(fetch_books_from_scraper, HelikonScraper(search_term)),  # Issues with cloudflare
                         executor.submit(fetch_books_from_scraper, OrangeScraper(search_term)),
                         executor.submit(fetch_books_from_scraper, PazarScraper(search_term)),
                         executor.submit(fetch_books_from_scraper, BibliomanScraper(search_term))

@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import cloudscraper
 from src.helpers.utils import format_book_details, process_title_text
+import threading
 
 
 class BibliomanScraper:
@@ -16,7 +17,7 @@ class BibliomanScraper:
         if response.status_code == 200:
             html_content = response.content
             self.__extract_individual_search_items(html_content, search_term)
-            self.__get_book_info()
+            self.__get_book_info_multithreaded()  # Change to use multithreaded method
         else:
             print(f"{self.__class__.__name__} failed to fetch the main page: {response.status_code}")
 
@@ -33,37 +34,48 @@ class BibliomanScraper:
                 href = a_tag['href']
                 self.individual_search_items.add(href)
 
-    def __get_book_info(self):
+    def __get_book_info(self, item):
+        url = f"https://biblioman.chitanka.info{item}"
+        response = self.scraper.get(url)
 
+        if response.status_code == 200:
+            html_content = response.content
+            soup = BeautifulSoup(html_content, 'html.parser')
+
+            book_details = {
+                "book_title": soup.find(class_='col-md-8 entity-field entity-field-title').find('a').text.strip(),
+                "author": soup.find(class_='col-md-8 entity-field entity-field-author').find('a').text.rstrip(),
+                "img_src": "https://biblioman.chitanka.info/" +
+                           soup.find('a', class_='thumb-link')['href'].split('.jpg')[0] + '.jpg',
+                "description": ''.join(p.get_text(strip=True) for p in
+                                       soup.find(class_='col-md-8 entity-field entity-field-annotation').find_all(
+                                           'p'))
+                if soup.find(class_='col-md-8 entity-field entity-field-annotation') else '',
+                "publisher": soup.find(class_='col-md-8 entity-field entity-field-publisher').find('a').text.strip(),
+                "language": soup.find(class_='col-md-8 entity-field entity-field-language').find('a').text.strip(),
+                "publication_year": soup.find(class_='col-md-8 entity-field entity-field-publishingYear').find(
+                    'a').text.strip(),
+                "ISBN": (soup.find(class_='col-md-8 entity-field entity-field-isbn').find('a').text.replace('-', '')
+                         .strip() if (
+                        soup.find(class_='col-md-8 entity-field entity-field-isbn')
+                        and soup.find(class_='col-md-8 entity-field entity-field-isbn').find('a')) else ""),
+                "tags": soup.find(class_='col-md-8 entity-field entity-field-category').find('a').text.strip(),
+            }
+
+            self.__format_book_details(book_details)
+
+        else:
+            print(f"{self.__class__.__name__} failed to fetch {url}: {response.status_code}")
+
+    def __get_book_info_multithreaded(self):
+        threads = []
         for item in self.individual_search_items:
-            url = f"https://biblioman.chitanka.info{item}"
-            response = self.scraper.get(url)
+            thread = threading.Thread(target=self.__get_book_info, args=(item,))
+            thread.start()
+            threads.append(thread)
 
-            if response.status_code == 200:
-                html_content = response.content
-                soup = BeautifulSoup(html_content, 'html.parser')
-
-                book_details = {
-                    "book_title": soup.find(class_='col-md-8 entity-field entity-field-title').find('a').text.strip(),
-                    "author": soup.find(class_='col-md-8 entity-field entity-field-author').find('a').text.rstrip(),
-                    "img_src": "https://biblioman.chitanka.info/" +
-                               soup.find('a', class_='thumb-link')['href'].split('.jpg')[0] + '.jpg',
-                    "description": ''.join(p.get_text(strip=True) for p in
-                                           soup.find(class_='col-md-8 entity-field entity-field-annotation').find_all('p'))
-                    if soup.find(class_='col-md-8 entity-field entity-field-annotation') else '',
-                    "publisher": soup.find(class_='col-md-8 entity-field entity-field-publisher').find('a').text.strip(),
-                    "language": soup.find(class_='col-md-8 entity-field entity-field-language').find('a').text.strip(),
-                    "publication_year": soup.find(class_='col-md-8 entity-field entity-field-publishingYear').find('a').text.strip(),
-                    "ISBN": (soup.find(class_='col-md-8 entity-field entity-field-isbn').find('a').text.replace('-', '')
-                             .strip() if (soup.find(class_='col-md-8 entity-field entity-field-isbn')
-                                          and soup.find(class_='col-md-8 entity-field entity-field-isbn').find('a')) else ""),
-                    "tags": soup.find(class_='col-md-8 entity-field entity-field-category').find('a').text.strip(),
-                    }
-
-                self.__format_book_details(book_details)
-
-            else:
-                print(f"{self.__class__.__name__} failed to fetch {url}: {response.status_code}")
+        for thread in threads:
+            thread.join()
 
     def __format_book_details(self, book_details):
         formatted_details = format_book_details(book_details)
